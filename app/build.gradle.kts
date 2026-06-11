@@ -61,8 +61,12 @@ dependencies {
     implementation ("com.google.dagger:dagger:2.52")
     ksp("com.google.dagger:dagger-compiler:2.52")
 
+    // Room
     val room = "2.7.1"
     implementation("androidx.room:room-runtime:$room")
     implementation("androidx.room:room-ktx:$room")
     ksp("androidx.room:room-compiler:$room")
+
+    // Lottie Animation
+    implementation(libs.lottie.compose)
 }
