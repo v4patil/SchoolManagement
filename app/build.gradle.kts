@@ -69,4 +69,7 @@ dependencies {
 
     // Lottie Animation
     implementation(libs.lottie.compose)
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.6.0")
 }

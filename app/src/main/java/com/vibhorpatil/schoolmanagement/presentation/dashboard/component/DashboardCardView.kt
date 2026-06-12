@@ -1,4 +1,4 @@
-package com.vibhorpatil.schoolmanagement.presentation.components
+package com.vibhorpatil.schoolmanagement.presentation.dashboard.component
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
