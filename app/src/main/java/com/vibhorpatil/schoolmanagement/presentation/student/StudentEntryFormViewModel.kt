@@ -6,8 +6,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vibhorpatil.schoolmanagement.data.local.database.entity.StudentEntity
-import com.vibhorpatil.schoolmanagement.data.local.repositories.StudentRepositoryImpl
 import com.vibhorpatil.schoolmanagement.di.ActivityScope
+import com.vibhorpatil.schoolmanagement.domain.repositories.StudentRepository
 import com.vibhorpatil.schoolmanagement.utils.DispatcherProvider
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @ActivityScope
 class StudentEntryFormViewModel @Inject constructor(
-    private val studentRepository: StudentRepositoryImpl,
+    private val studentRepository: StudentRepository,
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 

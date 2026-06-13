@@ -23,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.vibhorpatil.schoolmanagement.di.component.DaggerActivityComponent
 import com.vibhorpatil.schoolmanagement.presentation.course.CourseListScreen
+import com.vibhorpatil.schoolmanagement.presentation.course.CourseListViewModel
 import com.vibhorpatil.schoolmanagement.presentation.dashboard.DashBoardScreen
 import com.vibhorpatil.schoolmanagement.presentation.dashboard.component.drawer.DashboardDrawerSheet
 import com.vibhorpatil.schoolmanagement.presentation.enrollment.EnrollmentScreen
@@ -43,6 +44,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var studentEntryFormViewModel: StudentEntryFormViewModel
 
+    @Inject
+    lateinit var courseListViewModel: CourseListViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,7 +58,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SchoolManagementTheme {
-                NavigationDrawerView(studentListViewModel, studentEntryFormViewModel)
+                NavigationDrawerView(studentListViewModel, studentEntryFormViewModel, courseListViewModel)
             }
         }
     }
@@ -64,7 +68,8 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun NavigationDrawerView(studentListViewModel: StudentListViewModel,
-                         studentEntryFormViewModel : StudentEntryFormViewModel) {
+                         studentEntryFormViewModel : StudentEntryFormViewModel,
+                         courseListViewModel : CourseListViewModel) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -94,7 +99,7 @@ fun NavigationDrawerView(studentListViewModel: StudentListViewModel,
                         StudentListScreen(studentListViewModel, navController)
                     }
                     composable(Screen.DrawerScreen.CourseList.title) {
-                        CourseListScreen()
+                        CourseListScreen(courseListViewModel, navController)
                     }
                     composable(Screen.DrawerScreen.EnrollmentList.title) {
                         EnrollmentScreen()

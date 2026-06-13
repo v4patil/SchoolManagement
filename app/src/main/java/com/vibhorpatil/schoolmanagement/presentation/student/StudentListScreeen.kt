@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.vibhorpatil.schoolmanagement.presentation.components.EmptyView
 import com.vibhorpatil.schoolmanagement.presentation.navigation.Screen
 import com.vibhorpatil.schoolmanagement.presentation.student.component.StudentListItem
 import com.vibhorpatil.schoolmanagement.presentation.uiState.UiState
@@ -46,15 +47,19 @@ fun StudentListScreen(viewModel: StudentListViewModel, navController: NavHostCon
                 }
 
                 is UiState.Success -> {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(state.data) { student ->
-                            StudentListItem(
-                                student = student,
-                                onItemClick = { id ->
-                                    navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title + "/$id")
-                                }
-                            )
+                    if (state.data.isNotEmpty()) {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            items(state.data) { student ->
+                                StudentListItem(
+                                    student = student,
+                                    onItemClick = { id ->
+                                        navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title + "/$id")
+                                    }
+                                )
+                            }
                         }
+                    } else {
+                        EmptyView("No Students added")
                     }
                 }
 

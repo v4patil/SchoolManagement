@@ -31,18 +31,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vibhorpatil.schoolmanagement.domain.model.Student
+import com.vibhorpatil.schoolmanagement.utils.PreviewData.dummyStudent
 
 @Preview(showBackground = true)
 @Composable
 fun StudentListItemPreview() {
-    val student = Student(
-        1, "STU001", "Vibhor Patil", "vibhor@example.com",
-        "7350916174", System.currentTimeMillis(),
-        null, "Nagpur, India", true, System.currentTimeMillis(), System.currentTimeMillis()
-    )
     MaterialTheme {
         Box(modifier = Modifier.padding(4.dp)) {
-            StudentListItem(student) {}
+            StudentListItem(dummyStudent) {}
         }
     }
 }

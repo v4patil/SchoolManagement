@@ -3,9 +3,9 @@ package com.vibhorpatil.schoolmanagement.presentation.student
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vibhorpatil.schoolmanagement.data.local.mapper.toDomain
-import com.vibhorpatil.schoolmanagement.data.local.repositories.StudentRepositoryImpl
 import com.vibhorpatil.schoolmanagement.di.ActivityScope
 import com.vibhorpatil.schoolmanagement.domain.model.Student
+import com.vibhorpatil.schoolmanagement.domain.repositories.StudentRepository
 import com.vibhorpatil.schoolmanagement.presentation.uiState.UiState
 import com.vibhorpatil.schoolmanagement.utils.DispatcherProvider
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @ActivityScope
 class StudentListViewModel @Inject constructor(
-    private val studentRepository: StudentRepositoryImpl,
+    private val studentRepository: StudentRepository,
     private val dispatcherProvider: DispatcherProvider
 ) : ViewModel() {
 
