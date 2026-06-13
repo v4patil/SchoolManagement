@@ -11,7 +11,15 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import com.vibhorpatil.schoolmanagement.presentation.theme.surfaceWhite
+
+@Preview(showBackground = true)
+@Composable
+fun AppTopBarPreview(){
+    AppTopBar(title = "App Bar")
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -15,26 +15,46 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.vibhorpatil.schoolmanagement.di.component.DaggerActivityComponent
 import com.vibhorpatil.schoolmanagement.presentation.course.CourseListScreen
 import com.vibhorpatil.schoolmanagement.presentation.dashboard.DashBoardScreen
 import com.vibhorpatil.schoolmanagement.presentation.dashboard.component.drawer.DashboardDrawerSheet
 import com.vibhorpatil.schoolmanagement.presentation.enrollment.EnrollmentScreen
 import com.vibhorpatil.schoolmanagement.presentation.navigation.SchoolScreenNavigation
 import com.vibhorpatil.schoolmanagement.presentation.navigation.Screen
+import com.vibhorpatil.schoolmanagement.presentation.student.StudentEntryFormScreen
+import com.vibhorpatil.schoolmanagement.presentation.student.StudentEntryFormViewModel
 import com.vibhorpatil.schoolmanagement.presentation.student.StudentListScreen
+import com.vibhorpatil.schoolmanagement.presentation.student.StudentListViewModel
 import com.vibhorpatil.schoolmanagement.ui.theme.SchoolManagementTheme
+import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var studentListViewModel: StudentListViewModel
+
+    @Inject
+    lateinit var studentEntryFormViewModel: StudentEntryFormViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        DaggerActivityComponent.builder()
+            .applicationComponent((application as SchoolManagementApplication).applicationComponent)
+            .build()
+            .inject(this)
+
         enableEdgeToEdge()
         setContent {
             SchoolManagementTheme {
-                NavigationDrawerView()
+                NavigationDrawerView(studentListViewModel, studentEntryFormViewModel)
             }
         }
     }
@@ -43,7 +63,8 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun NavigationDrawerView() {
+fun NavigationDrawerView(studentListViewModel: StudentListViewModel,
+                         studentEntryFormViewModel : StudentEntryFormViewModel) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -70,13 +91,20 @@ fun NavigationDrawerView() {
                         DashBoardScreen()
                     }
                     composable(Screen.DrawerScreen.StudentList.title) {
-                        StudentListScreen()
+                        StudentListScreen(studentListViewModel, navController)
                     }
                     composable(Screen.DrawerScreen.CourseList.title) {
                         CourseListScreen()
                     }
                     composable(Screen.DrawerScreen.EnrollmentList.title) {
                         EnrollmentScreen()
+                    }
+                    composable(
+                        route = Screen.EntryFormScreen.StudentEntryForm.title + "/{studentId}",
+                        arguments = listOf(navArgument("studentId") { type = NavType.LongType })
+                    ) { backStackEntry ->
+                        val studentId = backStackEntry.arguments?.getLong("studentId") ?: -1L
+                        StudentEntryFormScreen(studentEntryFormViewModel, navController, studentId)
                     }
                 }
             }

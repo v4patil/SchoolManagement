@@ -43,6 +43,18 @@ fun DashboardDrawerSheet(
                     Screen.DrawerScreen.EnrollmentList -> {
                         navController.navigate(Screen.DrawerScreen.EnrollmentList.title)
                     }
+
+                    Screen.EntryFormScreen.StudentEntryForm -> {
+                        navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title)
+                    }
+
+                    Screen.EntryFormScreen.CourseEntryForm -> {
+                        navController.navigate(Screen.EntryFormScreen.CourseEntryForm.title)
+                    }
+
+                    Screen.EntryFormScreen.Enrollment -> {
+                        navController.navigate(Screen.EntryFormScreen.Enrollment.title)
+                    }
                 }
             }
         }

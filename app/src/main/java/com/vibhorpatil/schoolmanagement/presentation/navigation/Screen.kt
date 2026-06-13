@@ -29,6 +29,27 @@ sealed class Screen(val title: String, val route: SchoolScreenNavigation) {
             R.drawable.icon_students
         )
     }
+
+    sealed class EntryFormScreen(
+        title: String,
+        dRoute: SchoolScreenNavigation.EntryFormScreenNavigation
+    ) : Screen(title, dRoute) {
+
+        object StudentEntryForm : EntryFormScreen(
+            "StudentEntryForm",
+            SchoolScreenNavigation.EntryFormScreenNavigation.StudentEntryForm
+        )
+
+        object CourseEntryForm : EntryFormScreen(
+            "CourseEntryForm",
+            SchoolScreenNavigation.EntryFormScreenNavigation.CourseEntryForm
+        )
+
+        object Enrollment : EntryFormScreen(
+            "Enrollment",
+            SchoolScreenNavigation.EntryFormScreenNavigation.Enrollment
+        )
+    }
 }
 
 val screensInDrawer = listOf(

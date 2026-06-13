@@ -13,4 +13,10 @@ sealed class SchoolScreenNavigation(val route: String) {
 
     }
 
+    sealed class EntryFormScreenNavigation(dRoute: String) : SchoolScreenNavigation(dRoute) {
+        object StudentEntryForm : EntryFormScreenNavigation("StudentEntryForm")
+        object CourseEntryForm : EntryFormScreenNavigation("CourseEntryForm")
+        object Enrollment : EntryFormScreenNavigation("Enrollment")
+    }
+
 }
