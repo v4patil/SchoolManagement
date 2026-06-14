@@ -20,13 +20,13 @@ sealed class Screen(val title: String, val route: SchoolScreenNavigation) {
         object CourseList : DrawerScreen(
             "CourseList",
             SchoolScreenNavigation.DrawerScreenNavigation.CourseList,
-            R.drawable.icon_students
+            R.drawable.icon_course
         )
 
         object EnrollmentList : DrawerScreen(
             "EnrollmentList",
             SchoolScreenNavigation.DrawerScreenNavigation.EnrollmentList,
-            R.drawable.icon_students
+            R.drawable.icon_enroll
         )
     }
 

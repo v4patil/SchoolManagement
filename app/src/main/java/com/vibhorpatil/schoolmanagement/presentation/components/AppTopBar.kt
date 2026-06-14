@@ -42,7 +42,8 @@ fun AppTopBar(
                 ) {
                     Icon(
                         painter = painterResource(navigationIcon),
-                        contentDescription = "Navigation"
+                        contentDescription = "Navigation",
+                        tint = Color.Black
                     )
                 }
             }

@@ -34,17 +34,17 @@ import com.vibhorpatil.schoolmanagement.utils.PreviewData.dummyCourse
 @Preview(showBackground = true)
 @Composable
 fun CourseListItemPreview() {
-    CourseListItem(dummyCourse)
+    CourseListItem(dummyCourse){}
 }
 
 @Composable
-fun CourseListItem(course: Course) {
+fun CourseListItem(course: Course, onItemClick : (Long) -> Unit) {
 
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp, horizontal = 4.dp)
-            .clickable(onClick = {}),
+            .clickable(onClick = {onItemClick(course.courseId)}),
         shape = MaterialTheme.shapes.medium
     ) {
         Row(

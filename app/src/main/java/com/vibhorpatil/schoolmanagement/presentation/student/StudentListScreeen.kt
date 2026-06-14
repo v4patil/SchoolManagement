@@ -18,16 +18,28 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.vibhorpatil.schoolmanagement.R
+import com.vibhorpatil.schoolmanagement.presentation.components.AppTopBar
 import com.vibhorpatil.schoolmanagement.presentation.components.EmptyView
 import com.vibhorpatil.schoolmanagement.presentation.navigation.Screen
 import com.vibhorpatil.schoolmanagement.presentation.student.component.StudentListItem
 import com.vibhorpatil.schoolmanagement.presentation.uiState.UiState
 
 @Composable
-fun StudentListScreen(viewModel: StudentListViewModel, navController: NavHostController) {
+fun StudentListScreen(
+    viewModel: StudentListViewModel,
+    navController: NavHostController
+) {
     val uiState by viewModel.studentListState.collectAsState()
 
     Scaffold(
+        topBar = {
+            AppTopBar(
+                title = "Students",
+                navigationIcon = R.drawable.ic_back_arrow,
+                onNavigationClick = {navController.popBackStack()}
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = {
                 navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title + "/-1")

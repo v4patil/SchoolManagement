@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.vibhorpatil.schoolmanagement.R
 import com.vibhorpatil.schoolmanagement.presentation.navigation.Screen
 
 
@@ -45,7 +44,7 @@ fun DrawerItemView(
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(painter = painterResource(R.drawable.icon_students),
+        Icon(painter = painterResource(item.icon),
             modifier = Modifier.size(16.dp),
             contentDescription = item.title)
 

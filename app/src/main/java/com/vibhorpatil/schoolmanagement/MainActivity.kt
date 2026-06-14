@@ -22,6 +22,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.vibhorpatil.schoolmanagement.di.component.DaggerActivityComponent
+import com.vibhorpatil.schoolmanagement.presentation.course.CourseEntryFormScreen
+import com.vibhorpatil.schoolmanagement.presentation.course.CourseEntryFormViewModel
 import com.vibhorpatil.schoolmanagement.presentation.course.CourseListScreen
 import com.vibhorpatil.schoolmanagement.presentation.course.CourseListViewModel
 import com.vibhorpatil.schoolmanagement.presentation.dashboard.DashBoardScreen
@@ -47,6 +49,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var courseListViewModel: CourseListViewModel
 
+    @Inject
+    lateinit var courseEntryFormViewModel: CourseEntryFormViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -58,7 +63,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SchoolManagementTheme {
-                NavigationDrawerView(studentListViewModel, studentEntryFormViewModel, courseListViewModel)
+                NavigationDrawerView(studentListViewModel, studentEntryFormViewModel,
+                    courseListViewModel, courseEntryFormViewModel)
             }
         }
     }
@@ -69,7 +75,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NavigationDrawerView(studentListViewModel: StudentListViewModel,
                          studentEntryFormViewModel : StudentEntryFormViewModel,
-                         courseListViewModel : CourseListViewModel) {
+                         courseListViewModel : CourseListViewModel,
+                         courseEntryFormViewModel: CourseEntryFormViewModel) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -110,6 +117,13 @@ fun NavigationDrawerView(studentListViewModel: StudentListViewModel,
                     ) { backStackEntry ->
                         val studentId = backStackEntry.arguments?.getLong("studentId") ?: -1L
                         StudentEntryFormScreen(studentEntryFormViewModel, navController, studentId)
+                    }
+                    composable(
+                        route = Screen.EntryFormScreen.CourseEntryForm.title + "/{courseId}",
+                        arguments = listOf(navArgument("courseId") {type = NavType.LongType})
+                    ){ backStackEntry ->
+                        val courseId = backStackEntry.arguments?.getLong("courseId")?: -1L
+                        CourseEntryFormScreen(courseEntryFormViewModel, navController, courseId)
                     }
                 }
             }
