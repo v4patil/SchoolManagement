@@ -33,24 +33,29 @@ fun CourseListScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsState()
+    val currentRoute = navController.currentBackStackEntry?.destination?.route
+    val isSelectionMode = currentRoute?.startsWith("select_course") == true ||
+            currentRoute?.contains("select_course") == true
 
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Courses",
+                title = if (isSelectionMode) "Select Course" else "Courses",
                 navigationIcon = R.drawable.ic_back_arrow,
-                onNavigationClick = {navController.popBackStack()}
+                onNavigationClick = { navController.popBackStack() }
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navController.navigate(Screen.EntryFormScreen.CourseEntryForm.title + "/-1")
-                },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Course")
+            if (!isSelectionMode) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(Screen.EntryFormScreen.CourseEntryForm.title + "/-1")
+                    },
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Course")
+                }
             }
         }
     ) { paddingValues ->
@@ -68,9 +73,13 @@ fun CourseListScreen(
                     if (state.data.isNotEmpty()) {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(state.data) { course ->
-                                CourseListItem(course, { courseId ->
-                                    navController.navigate(Screen.EntryFormScreen.CourseEntryForm.title + "/$courseId")
-                                })
+                                CourseListItem(course) { courseId ->
+                                    if (isSelectionMode) {
+                                        navController.navigate("select_student_for_course/$courseId")
+                                    } else {
+                                        navController.navigate(Screen.EntryFormScreen.CourseEntryForm.title + "/$courseId")
+                                    }
+                                }
                             }
                         }
                     } else {

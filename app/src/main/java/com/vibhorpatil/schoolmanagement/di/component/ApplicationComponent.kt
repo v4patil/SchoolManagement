@@ -5,6 +5,7 @@ import com.vibhorpatil.schoolmanagement.di.module.ApplicationModule
 import com.vibhorpatil.schoolmanagement.di.module.DatabaseModule
 import com.vibhorpatil.schoolmanagement.di.module.RepositoryModule
 import com.vibhorpatil.schoolmanagement.domain.repositories.CourseRepository
+import com.vibhorpatil.schoolmanagement.domain.repositories.EnrollmentRepository
 import com.vibhorpatil.schoolmanagement.domain.repositories.StudentRepository
 import com.vibhorpatil.schoolmanagement.utils.DispatcherProvider
 import dagger.Component
@@ -19,6 +20,8 @@ interface ApplicationComponent {
     fun studentRepository(): StudentRepository
 
     fun courseRepository(): CourseRepository
+
+    fun enrollmentRepository(): EnrollmentRepository
 
     fun dispatcherProvider(): DispatcherProvider
 }

@@ -28,7 +28,9 @@ import com.vibhorpatil.schoolmanagement.presentation.course.CourseListScreen
 import com.vibhorpatil.schoolmanagement.presentation.course.CourseListViewModel
 import com.vibhorpatil.schoolmanagement.presentation.dashboard.DashBoardScreen
 import com.vibhorpatil.schoolmanagement.presentation.dashboard.component.drawer.DashboardDrawerSheet
+import com.vibhorpatil.schoolmanagement.presentation.enrollment.EnrollIntoScreen
 import com.vibhorpatil.schoolmanagement.presentation.enrollment.EnrollmentScreen
+import com.vibhorpatil.schoolmanagement.presentation.enrollment.EnrollmentViewModel
 import com.vibhorpatil.schoolmanagement.presentation.navigation.SchoolScreenNavigation
 import com.vibhorpatil.schoolmanagement.presentation.navigation.Screen
 import com.vibhorpatil.schoolmanagement.presentation.student.StudentEntryFormScreen
@@ -52,6 +54,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var courseEntryFormViewModel: CourseEntryFormViewModel
 
+    @Inject
+    lateinit var enrollmentViewModel: EnrollmentViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -63,8 +68,13 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SchoolManagementTheme {
-                NavigationDrawerView(studentListViewModel, studentEntryFormViewModel,
-                    courseListViewModel, courseEntryFormViewModel)
+                NavigationDrawerView(
+                    studentListViewModel,
+                    studentEntryFormViewModel,
+                    courseListViewModel,
+                    courseEntryFormViewModel,
+                    enrollmentViewModel
+                )
             }
         }
     }
@@ -73,10 +83,13 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun NavigationDrawerView(studentListViewModel: StudentListViewModel,
-                         studentEntryFormViewModel : StudentEntryFormViewModel,
-                         courseListViewModel : CourseListViewModel,
-                         courseEntryFormViewModel: CourseEntryFormViewModel) {
+fun NavigationDrawerView(
+    studentListViewModel: StudentListViewModel,
+    studentEntryFormViewModel: StudentEntryFormViewModel,
+    courseListViewModel: CourseListViewModel,
+    courseEntryFormViewModel: CourseEntryFormViewModel,
+    enrollmentViewModel: EnrollmentViewModel
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -109,7 +122,7 @@ fun NavigationDrawerView(studentListViewModel: StudentListViewModel,
                         CourseListScreen(courseListViewModel, navController)
                     }
                     composable(Screen.DrawerScreen.EnrollmentList.title) {
-                        EnrollmentScreen()
+                        EnrollmentScreen(navController)
                     }
                     composable(
                         route = Screen.EntryFormScreen.StudentEntryForm.title + "/{studentId}",
@@ -124,6 +137,30 @@ fun NavigationDrawerView(studentListViewModel: StudentListViewModel,
                     ){ backStackEntry ->
                         val courseId = backStackEntry.arguments?.getLong("courseId")?: -1L
                         CourseEntryFormScreen(courseEntryFormViewModel, navController, courseId)
+                    }
+
+                    composable("select_student_for_enrollment") {
+                        StudentListScreen(studentListViewModel, navController)
+                    }
+
+                    composable(
+                        route = "select_course_for_student/{studentId}",
+                        arguments = listOf(navArgument("studentId") { type = NavType.LongType })
+                    ) { backStackEntry ->
+                        val studentId = backStackEntry.arguments?.getLong("studentId") ?: -1L
+                        EnrollIntoScreen(enrollmentViewModel,studentId, true)
+                    }
+
+                    composable("select_course_for_enrollment") {
+                        CourseListScreen(courseListViewModel, navController)
+                    }
+
+                    composable(
+                        route = "select_student_for_course/{courseId}",
+                        arguments = listOf(navArgument("courseId") { type = NavType.LongType })
+                    ) { backStackEntry ->
+                        val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
+                        EnrollIntoScreen(enrollmentViewModel,courseId, false)
                     }
                 }
             }

@@ -32,19 +32,25 @@ fun StudentListScreen(
 ) {
     val uiState by viewModel.studentListState.collectAsState()
 
+    val currentRoute = navController.currentBackStackEntry?.destination?.route
+    val isSelectionMode = currentRoute?.startsWith("select_student") == true || 
+                         currentRoute?.contains("select_student") == true
+
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Students",
+                title = if (isSelectionMode) "Select Student" else "Students",
                 navigationIcon = R.drawable.ic_back_arrow,
                 onNavigationClick = {navController.popBackStack()}
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title + "/-1")
-            }) {
-                Icon(Icons.Default.Add, contentDescription = "Add Student")
+            if (!isSelectionMode) {
+                FloatingActionButton(onClick = {
+                    navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title + "/-1")
+                }) {
+                    Icon(Icons.Default.Add, contentDescription = "Add Student")
+                }
             }
         }
     ) { paddingValues ->
@@ -65,7 +71,11 @@ fun StudentListScreen(
                                 StudentListItem(
                                     student = student,
                                     onItemClick = { id ->
-                                        navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title + "/$id")
+                                        if (isSelectionMode && currentRoute == "select_student_for_enrollment") {
+                                            navController.navigate("select_course_for_student/$id")
+                                        } else {
+                                            navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title + "/$id")
+                                        }
                                     }
                                 )
                             }
