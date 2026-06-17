@@ -148,7 +148,7 @@ fun NavigationDrawerView(
                         arguments = listOf(navArgument("studentId") { type = NavType.LongType })
                     ) { backStackEntry ->
                         val studentId = backStackEntry.arguments?.getLong("studentId") ?: -1L
-                        EnrollIntoScreen(enrollmentViewModel,studentId, true)
+                        EnrollIntoScreen(enrollmentViewModel, navController, studentId, true)
                     }
 
                     composable("select_course_for_enrollment") {
@@ -160,7 +160,7 @@ fun NavigationDrawerView(
                         arguments = listOf(navArgument("courseId") { type = NavType.LongType })
                     ) { backStackEntry ->
                         val courseId = backStackEntry.arguments?.getLong("courseId") ?: -1L
-                        EnrollIntoScreen(enrollmentViewModel,courseId, false)
+                        EnrollIntoScreen(enrollmentViewModel, navController, courseId, false)
                     }
                 }
             }
