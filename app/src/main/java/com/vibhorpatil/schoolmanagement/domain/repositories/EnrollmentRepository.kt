@@ -16,4 +16,8 @@ interface EnrollmentRepository {
     suspend fun deleteEnrollment(enrollment: EnrollmentEntity)
 
     suspend fun deleteEnrollmentById(enrollmentId: Long)
+
+    suspend fun getCoursesForStudent(studentId: Long): List<EnrollmentEntity>
+
+    suspend fun deleteEnrollment(studentId: Long, courseId: Long)
 }

@@ -55,7 +55,8 @@ fun AppTopBar(
                 ) {
                     Icon(
                         painter = painterResource(actionIcon),
-                        contentDescription = "Action"
+                        contentDescription = "Action",
+                        tint = Color.Black
                     )
                 }
 

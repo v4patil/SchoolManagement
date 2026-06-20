@@ -5,6 +5,7 @@ data class EnrollData(
     val title: String,
     val subTitle: String,
     val profile: Int,
+    val fee: Double,
     val isEnrolled: Boolean,
 
     )

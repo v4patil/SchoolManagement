@@ -20,9 +20,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,6 +33,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,29 +47,48 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.vibhorpatil.schoolmanagement.R
+import com.vibhorpatil.schoolmanagement.domain.model.Course
 import com.vibhorpatil.schoolmanagement.domain.model.EnrollData
+import com.vibhorpatil.schoolmanagement.domain.model.Student
 import com.vibhorpatil.schoolmanagement.presentation.components.AppTopBar
+import com.vibhorpatil.schoolmanagement.presentation.uiState.UiState
 import kotlinx.coroutines.launch
 
 @Composable
 fun EnrollIntoScreen(
-    enrollmentViewModel: EnrollmentViewModel,
+    viewModel: EnrollmentViewModel,
     navController: NavHostController,
     entityId: Long, isStudent: Boolean
 ) {
+    val uiState by viewModel.studentProfileState.collectAsStateWithLifecycle()
+    val enrollmentState by viewModel.enrollmentUiState.collectAsStateWithLifecycle()
 
-    var isOpenBottomSheet by remember {
-        mutableStateOf(false)
+    LaunchedEffect(entityId) {
+        if (isStudent) {
+            viewModel.fetchStudentData(entityId)
+            viewModel.loadStudentEnrollments(entityId)
+        }
     }
+
+    var isOpenBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             AppTopBar(
                 title = if (isStudent) "Student Details" else "Course Details",
                 navigationIcon = R.drawable.ic_back_arrow,
-                onNavigationClick = { navController.popBackStack() })
+                onNavigationClick = { navController.popBackStack() },
+                actionIcon = R.drawable.ic_back_arrow,
+                onActionClick = {
+                    if (enrollmentState.hasPendingChanges) {
+                        viewModel.saveEnrollmentChanges(entityId)
+                        navController.popBackStack()
+                    }
+                }
+            )
         }
     ) { paddingValues ->
         Column(
@@ -79,14 +98,21 @@ fun EnrollIntoScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (isStudent) {
-                StudentDetails()
-            } else {
-                CourseDetails()
+            when (val state = uiState) {
+                is UiState.Loading -> {
+                    CircularProgressIndicator()
+                }
+
+                is UiState.Success<*> -> {
+                    if (isStudent) {
+                        StudentDetails(state.data as Student)
+                    } else {
+                        CourseDetails(state.data as Course)
+                    }
+                }
+
+                is UiState.Error -> {}
             }
-
-            SubDetails()
-
 
             Button(
                 onClick = { isOpenBottomSheet = !isOpenBottomSheet },
@@ -95,20 +121,30 @@ fun EnrollIntoScreen(
                     .padding(start = 8.dp, end = 8.dp, top = 8.dp)
             ) {
                 Icon(painter = painterResource(R.drawable.icon_course), contentDescription = "")
-                Text(text = if (true) "Manage Student" else "Manage Course")
+                Text(text = if (isStudent) "Manage Course" else "Manage Student")
             }
 
-            EnrollNonEnrollPager()
+            EnrollNonEnrollPager(
+                enrolledItems = enrollmentState.enrolledItems,
+                nonEnrolledItems = enrollmentState.nonEnrolledItems
+            )
 
             if (isOpenBottomSheet) {
-                EnrollmentBottomSheet( {isOpenBottomSheet = ! isOpenBottomSheet})
+                EnrollmentBottomSheet(
+                    items = enrollmentState.allItems,
+                    onEnroll = viewModel::enrollCourse,
+                    onUnEnroll = viewModel::unEnrollCourse,
+                    onDismiss = {
+                        isOpenBottomSheet = false
+                    }
+                )
             }
         }
     }
 }
 
 @Composable
-fun StudentDetails() {
+fun StudentDetails(student: Student) {
     Row(
         modifier = Modifier
             .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
@@ -121,34 +157,35 @@ fun StudentDetails() {
             contentDescription = "Student Profile Photo"
         )
 
-        Column() {
+        Column {
             Text(
-                text = "Vibhor Patil", style = TextStyle.Default.copy(
+                text = student.fullName, style = TextStyle.Default.copy(
                     color = Color.Black,
                     fontWeight = FontWeight.ExtraBold
                 )
             )
             Text(
-                text = "Vibhorbpatil@Gmail.com", style = TextStyle.Default.copy(
+                text = student.email, style = TextStyle.Default.copy(
                     color = Color.Gray,
                     fontWeight = FontWeight.Light
                 )
             )
             Text(
-                text = "+91 7350916174", style = TextStyle.Default.copy(
+                text = student.mobileNumber, style = TextStyle.Default.copy(
                     color = Color.Gray,
                     fontWeight = FontWeight.Light
                 )
             )
             Text(
-                text = "Enrolled On", style = TextStyle.Default.copy(
+                text = student.enrollmentDate.toString(), style = TextStyle.Default.copy(
                     color = Color.Gray,
                     fontWeight = FontWeight.Light
                 )
             )
             Text(
-                text = "Active", style = TextStyle.Default.copy(
-                    color = Color.Gray,
+                text = if (student.isActive) "Active" else "Not-Active",
+                style = TextStyle.Default.copy(
+                    color = if (student.isActive) Color.Green else Color.Gray,
                     fontWeight = FontWeight.Light
                 )
             )
@@ -158,7 +195,7 @@ fun StudentDetails() {
 }
 
 @Composable
-fun CourseDetails() {
+fun CourseDetails(course: Course) {
     Row(
         modifier = Modifier
             .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
@@ -236,31 +273,7 @@ fun CourseDetails() {
 }
 
 @Composable
-fun SubDetails() {
-    Row() {
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "Total Courses", style = MaterialTheme.typography.titleMedium)
-            Text(text = "4", style = MaterialTheme.typography.labelSmall)
-
-        }
-
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "Total Courses", style = MaterialTheme.typography.titleMedium)
-            Text(text = "4", style = MaterialTheme.typography.labelSmall)
-
-        }
-
-    }
-}
-
-@Composable
-fun EnrollNonEnrollPager() {
+fun EnrollNonEnrollPager(enrolledItems: List<EnrollData>, nonEnrolledItems: List<EnrollData>) {
     val tabs = listOf("Enrolled", "Non-Enrolled")
     val pagerState = rememberPagerState(pageCount = { tabs.size })
 
@@ -294,41 +307,40 @@ fun EnrollNonEnrollPager() {
                 .fillMaxWidth()
         ) { page ->
             when (page) {
-                0 -> EnrolledListScreen()
-                1 -> NonEnrolledListScreen()
+                0 -> EnrolledListScreen(items = enrolledItems)
+
+                1 -> NonEnrolledListScreen(items = nonEnrolledItems)
             }
         }
     }
 }
 
 @Composable
-fun EnrolledListScreen() {
-    LazyColumn() {
-        items(10) {
-            ListItem(onItemClick = {})
+fun EnrolledListScreen(items: List<EnrollData>) {
+    LazyColumn {
+        items(items) {
+            ListItem(
+                enrollData = it,
+                onItemClick = {}
+            )
         }
     }
 }
 
 @Composable
-fun NonEnrolledListScreen() {
-    LazyColumn() {
-        items(10) {
-            ListItem(onItemClick = {})
+fun NonEnrolledListScreen(items: List<EnrollData>) {
+    LazyColumn {
+        items(items) {
+            ListItem(
+                enrollData = it,
+                onItemClick = {}
+            )
         }
     }
 }
 
 @Composable
-fun ListItem(
-    enrollData: EnrollData = EnrollData(
-        id = 1,
-        title = "Title",
-        subTitle = "SubTitle",
-        2,
-        true
-    ), onItemClick: (Long) -> Unit
-) {
+fun ListItem(enrollData: EnrollData, onItemClick: (Long) -> Unit) {
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -374,21 +386,25 @@ fun ListItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EnrollmentBottomSheet(
+    items: List<EnrollData>,
+    onEnroll: (Long) -> Unit,
+    onUnEnroll: (Long) -> Unit,
     onDismiss: () -> Unit
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss
     ) {
-        LazyColumn(
-            modifier = Modifier.padding(16.dp)
-        ) {
-            items(3) {
+        LazyColumn {
+            items(
+                items = items,
+                key = { it.id }
+            ) { item ->
                 CourseEnrollmentItem(
-                    "Android Development",
-                    "Amit Shekhar",
-                    true,
-                    {},
-                    {}
+                    courseName = item.title,
+                    instructorName = item.subTitle,
+                    isEnrolled = item.isEnrolled,
+                    onEnrollClick = { onEnroll(item.id) },
+                    onUnenrollClick = { onUnEnroll(item.id) }
                 )
             }
         }
@@ -406,19 +422,18 @@ fun CourseEnrollmentItem(
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .padding(horizontal = 8.dp, vertical = 6.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Icon(
                 imageVector = Icons.Default.Email,
                 contentDescription = null,
-                modifier = Modifier.size(48.dp)
+                modifier = Modifier.size(30.dp)
             )
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -426,32 +441,31 @@ fun CourseEnrollmentItem(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-
                 Text(
                     text = courseName,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold
                 )
 
                 Text(
                     text = instructorName,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                AssistChip(
-                    onClick = { },
-                    label = {
-                        Text(
-                            if (isEnrolled)
-                                "Enrolled"
-                            else
-                                "Not Enrolled"
-                        )
-                    }
-                )
+//                AssistChip(
+//                    onClick = { },
+//                    label = {
+//                        Text(
+//                            if (isEnrolled)
+//                                "Enrolled"
+//                            else
+//                                "Not Enrolled"
+//                        )
+//                    }
+//                )
             }
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -460,7 +474,8 @@ fun CourseEnrollmentItem(
                 OutlinedButton(
                     onClick = onUnenrollClick
                 ) {
-                    Text("Unenroll")
+                    Text(text = "Unenroll",
+                        style = MaterialTheme.typography.bodyMedium,)
                 }
             } else {
                 Button(

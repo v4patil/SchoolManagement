@@ -32,4 +32,12 @@ class EnrollmentRepositoryImpl @Inject constructor(private val enrollmentDao: En
     override suspend fun getEnrollmentById(enrollmentId: Long): EnrollmentEntity? {
         return enrollmentDao.getEnrollmentById(enrollmentId)
     }
+
+    override suspend fun getCoursesForStudent(studentId: Long): List<EnrollmentEntity> {
+        return enrollmentDao.getCoursesForStudent(studentId)
+    }
+
+    override suspend fun deleteEnrollment(studentId: Long, courseId: Long) {
+        return enrollmentDao.deleteEnrollment(studentId, courseId)
+    }
 }
