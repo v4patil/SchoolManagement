@@ -54,6 +54,15 @@ interface EnrollmentDao {
     """)
     suspend fun getCoursesForStudent(studentId: Long): List<EnrollmentEntity>
 
+    @Query(
+        """
+    SELECT *
+    FROM ${Constants.EnrollmentConstants.TABLE_NAME}
+    WHERE ${Constants.EnrollmentConstants.COLUMN_COURSE_ID} = :courseId
+    """
+    )
+    suspend fun getStudentsForCourse(courseId: Long): List<EnrollmentEntity>
+
     @Query("""
     DELETE FROM ${Constants.EnrollmentConstants.TABLE_NAME}
     WHERE ${Constants.EnrollmentConstants.COLUMN_STUDENT_ID} = :studentId

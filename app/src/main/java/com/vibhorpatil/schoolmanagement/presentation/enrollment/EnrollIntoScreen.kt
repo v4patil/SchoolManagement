@@ -64,12 +64,15 @@ fun EnrollIntoScreen(
     entityId: Long, isStudent: Boolean
 ) {
     val uiState by viewModel.studentProfileState.collectAsStateWithLifecycle()
+    val uiStateCourse by viewModel.courseProfileState.collectAsStateWithLifecycle()
     val enrollmentState by viewModel.enrollmentUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(entityId) {
+        viewModel.fetchEntityDataData(entityId, isStudent)
         if (isStudent) {
-            viewModel.fetchStudentData(entityId)
             viewModel.loadStudentEnrollments(entityId)
+        } else {
+            viewModel.loadCourseEnrollments(entityId)
         }
     }
 
@@ -84,7 +87,7 @@ fun EnrollIntoScreen(
                 actionIcon = R.drawable.ic_back_arrow,
                 onActionClick = {
                     if (enrollmentState.hasPendingChanges) {
-                        viewModel.saveEnrollmentChanges(entityId)
+                        viewModel.saveEnrollmentChanges(entityId, isStudent)
                         navController.popBackStack()
                     }
                 }
@@ -98,7 +101,7 @@ fun EnrollIntoScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            when (val state = uiState) {
+            when (val state = if (isStudent) uiState else uiStateCourse) {
                 is UiState.Loading -> {
                     CircularProgressIndicator()
                 }

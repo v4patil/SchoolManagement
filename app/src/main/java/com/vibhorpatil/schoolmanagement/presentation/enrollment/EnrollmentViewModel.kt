@@ -6,6 +6,7 @@ import com.vibhorpatil.schoolmanagement.R
 import com.vibhorpatil.schoolmanagement.data.local.database.entity.EnrollmentEntity
 import com.vibhorpatil.schoolmanagement.data.local.mapper.toDomain
 import com.vibhorpatil.schoolmanagement.di.ActivityScope
+import com.vibhorpatil.schoolmanagement.domain.model.Course
 import com.vibhorpatil.schoolmanagement.domain.model.EnrollData
 import com.vibhorpatil.schoolmanagement.domain.model.Student
 import com.vibhorpatil.schoolmanagement.domain.repositories.CourseRepository
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @ActivityScope
@@ -32,24 +34,39 @@ class EnrollmentViewModel @Inject constructor(
     private val _studentProfileState = MutableStateFlow<UiState<Student>>(UiState.Loading)
     val studentProfileState = _studentProfileState
 
+    private val _courseProfileState = MutableStateFlow<UiState<Course>>(UiState.Loading)
+    val courseProfileState = _courseProfileState
+
     private val _enrollmentUiState = MutableStateFlow(EnrollmentUiState())
     val enrollmentUiState = _enrollmentUiState
 
     private val pendingEnrollIds = mutableSetOf<Long>()
     private val pendingUnEnrollIds = mutableSetOf<Long>()
 
-    fun fetchStudentData(studentId: Long) {
+    fun fetchEntityDataData(entityId: Long, isStudent: Boolean) {
         viewModelScope.launch(dispatcherProvider.Main) {
-            _studentProfileState.value = UiState.Loading
-            studentRepository.getStudent(studentId)
-                .flowOn(dispatcherProvider.IO)
-                .map { it?.toDomain() }
-                .catch {
-                    _studentProfileState.value = UiState.Error(it.message ?: "")
+            if (isStudent) {
+                _studentProfileState.value = UiState.Loading
+                studentRepository.getStudent(entityId)
+                    .flowOn(dispatcherProvider.IO)
+                    .map { it?.toDomain() }
+                    .catch {
+                        _studentProfileState.value = UiState.Error(it.message ?: "")
+                    }
+                    .collect {
+                        _studentProfileState.value = UiState.Success(it) as UiState<Student>
+                    }
+            } else {
+                _courseProfileState.value = UiState.Loading
+                withContext(dispatcherProvider.IO) {
+                    val course = courseRepository.getCourseById(entityId)
+                    withContext(dispatcherProvider.Main) {
+                        course?.let {
+                            _courseProfileState.value = UiState.Success(it.toDomain()) as UiState<Course>
+                        }
+                    }
                 }
-                .collect {
-                    _studentProfileState.value = UiState.Success(it) as UiState<Student>
-                }
+            }
         }
     }
 
@@ -72,6 +89,30 @@ class EnrollmentViewModel @Inject constructor(
                         isEnrolled = course.courseId in enrolledIds
                     )
                 }
+
+            _enrollmentUiState.value = EnrollmentUiState(allItems = allItems)
+        }
+    }
+
+    fun loadCourseEnrollments(courseId: Long) {
+        viewModelScope.launch(dispatcherProvider.IO) {
+
+            val enrolledStudents = enrollmentRepository.getStudentsForCourse(courseId)
+
+            val enrolledIds = enrolledStudents.map { it.studentId }.toSet()
+
+            val allStudents = studentRepository.getStudents().first()
+
+            val allItems = allStudents.map { studentEntity ->
+                    EnrollData(
+                        id = studentEntity.studentId,
+                        title = studentEntity.fullName,
+                        subTitle = studentEntity.email,
+                        profile = R.drawable.icon_students,
+                        fee = 0.0,
+                        isEnrolled = studentEntity.studentId in enrolledIds
+                    )
+            }
 
             _enrollmentUiState.value = EnrollmentUiState(allItems = allItems)
         }
@@ -109,25 +150,46 @@ class EnrollmentViewModel @Inject constructor(
             )
     }
 
-    fun saveEnrollmentChanges(studentId: Long) {
+    fun saveEnrollmentChanges(entityId: Long, isStudent: Boolean) {
         viewModelScope.launch(dispatcherProvider.IO) {
-            pendingEnrollIds.forEach { courseId ->
-                enrollmentRepository.insertEnrollment(
-                    EnrollmentEntity(
-                        studentId = studentId,
-                        courseId = courseId,
-                        enrollmentDate = System.currentTimeMillis(),
-                        courseFee = 0.0
+            if (isStudent) {
+                pendingEnrollIds.forEach { courseId ->
+                    enrollmentRepository.insertEnrollment(
+                        EnrollmentEntity(
+                            studentId = entityId,
+                            courseId = courseId,
+                            enrollmentDate = System.currentTimeMillis(),
+                            courseFee = 0.0
+                        )
                     )
-                )
+                }
+
+                pendingUnEnrollIds.forEach { courseId ->
+                    enrollmentRepository.deleteEnrollment(
+                        studentId = entityId,
+                        courseId = courseId
+                    )
+                }
+            } else {
+                pendingEnrollIds.forEach { studentId ->
+                    enrollmentRepository.insertEnrollment(
+                        EnrollmentEntity(
+                            studentId = studentId,
+                            courseId = entityId,
+                            enrollmentDate = System.currentTimeMillis(),
+                            courseFee = 0.0
+                        )
+                    )
+                }
+
+                pendingUnEnrollIds.forEach { studentId ->
+                    enrollmentRepository.deleteEnrollment(
+                        studentId = studentId,
+                        courseId = entityId
+                    )
+                }
             }
 
-            pendingUnEnrollIds.forEach { courseId ->
-                enrollmentRepository.deleteEnrollment(
-                    studentId = studentId,
-                    courseId = courseId
-                )
-            }
             pendingEnrollIds.clear()
             pendingUnEnrollIds.clear()
 
