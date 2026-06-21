@@ -29,6 +29,7 @@ class CourseEntryFormViewModel @Inject constructor(
     var courseId by mutableStateOf<Long?>(null)
         private set
     var courseName by mutableStateOf("")
+    var courseProfilePhoto: String? by mutableStateOf("")
     var courseDescription by mutableStateOf("")
     var courseDuration by mutableIntStateOf(0)
     var courseFees by mutableDoubleStateOf(0.0)
@@ -48,6 +49,7 @@ class CourseEntryFormViewModel @Inject constructor(
             courseRepository.getCourseById(courseId)?.let { courseEntity ->
                 val course = courseEntity.toDomain()
                 courseName = course.courseName
+                courseProfilePhoto = course.profilePhoto
                 courseDescription = course.courseName
                 courseDuration = course.description.toIntOrNull() ?: 0
                 courseFees = course.fees
@@ -77,6 +79,7 @@ class CourseEntryFormViewModel @Inject constructor(
                 courseId = courseId ?: 0,
                 courseCode = "",
                 description = courseDescription,
+                profilePhoto = courseProfilePhoto,
                 courseName = courseName,
                 durationInMonths = courseDuration,
                 fees = courseFees,

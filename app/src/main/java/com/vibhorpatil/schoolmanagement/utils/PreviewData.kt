@@ -24,6 +24,7 @@ object PreviewData {
         courseId = 1L,
         courseCode = "CS101",
         courseName = "Computer Science Fundamentals",
+        profilePhoto = "Computer Science Fundamentals",
         description = "An introductory course covering programming basics, algorithms, and data structures.",
         durationInMonths = 6,
         fees = 15000.0,

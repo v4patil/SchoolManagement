@@ -1,5 +1,8 @@
 package com.vibhorpatil.schoolmanagement.presentation.student
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,8 +30,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.vibhorpatil.schoolmanagement.presentation.components.CircularImage
+import com.vibhorpatil.schoolmanagement.utils.Util.copyImageToAppStorage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +45,16 @@ fun StudentEntryFormScreen(
 ) {
     LaunchedEffect(studentId) {
         viewModel.loadStudent(studentId)
+    }
+
+    val context = LocalContext.current
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val savedPath = copyImageToAppStorage(context, it)
+            viewModel.studentImage = savedPath
+        }
     }
 
     Scaffold(
@@ -73,6 +89,14 @@ fun StudentEntryFormScreen(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+
+                CircularImage(
+                    uri = viewModel.studentImage,
+                    onImageClick = {
+                        imagePickerLauncher.launch("image/*")
+                    }
+                )
+
                 OutlinedTextField(
                     value = viewModel.studentCode,
                     onValueChange = { viewModel.studentCode = it },

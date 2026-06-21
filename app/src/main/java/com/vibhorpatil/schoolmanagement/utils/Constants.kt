@@ -28,6 +28,7 @@ object Constants {
         const val COLUMN_COURSE_ID = "courseId"
         const val COLUMN_COURSE_CODE = "courseCode"
         const val COLUMN_COURSE_NAME = "courseName"
+        const val COLUMN_COURSE_PROFILE_PHOTO = "courseProfilePhoto"
         const val COLUMN_DESCRIPTION = "description"
         const val COLUMN_DURATION_IN_MONTHS = "durationInMonths"
         const val COLUMN_FEES = "fees"

@@ -75,4 +75,8 @@ dependencies {
 
     // Behaviour like Fragment
     implementation("androidx.compose.foundation:foundation")
+
+    // Koil Image Loading
+    implementation("io.coil-kt:coil-compose:2.5.0")
+//    implementation("io.coil-kt:coil-compose:2.4.0")
 }

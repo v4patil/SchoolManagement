@@ -1,7 +1,7 @@
 package com.vibhorpatil.schoolmanagement.presentation.enrollment
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,9 +17,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Build
+import coil.compose.AsyncImage
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -41,7 +44,10 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +62,7 @@ import com.vibhorpatil.schoolmanagement.domain.model.Student
 import com.vibhorpatil.schoolmanagement.presentation.components.AppTopBar
 import com.vibhorpatil.schoolmanagement.presentation.uiState.UiState
 import kotlinx.coroutines.launch
+import java.io.File
 
 @Composable
 fun EnrollIntoScreen(
@@ -154,10 +161,20 @@ fun StudentDetails(student: Student) {
             .background(MaterialTheme.colorScheme.surface)
     ) {
 
-        Image(
-            modifier = Modifier.weight(1F),
-            painter = painterResource(R.drawable.icon_students),
-            contentDescription = "Student Profile Photo"
+        AsyncImage(
+            model = student.profilePhoto?.let { File(student.profilePhoto) },
+            contentDescription = "Profile Image",
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+                .border(
+                    2.dp,
+                    MaterialTheme.colorScheme.outline,
+                    CircleShape
+                ),
+            contentScale = ContentScale.Crop,
+            placeholder = rememberVectorPainter(Icons.Default.Person),
+            error = rememberVectorPainter(Icons.Default.Person)
         )
 
         Column {
@@ -205,15 +222,25 @@ fun CourseDetails(course: Course) {
             .background(MaterialTheme.colorScheme.surface)
     ) {
 
-        Image(
-            modifier = Modifier.weight(1F),
-            painter = painterResource(R.drawable.icon_students),
-            contentDescription = "Student Profile Photo"
+        AsyncImage(
+            model = course.profilePhoto?.let { File(course.profilePhoto) },
+            contentDescription = "Profile Image",
+            modifier = Modifier
+                .size(100.dp)
+                .clip(CircleShape)
+                .border(
+                    2.dp,
+                    MaterialTheme.colorScheme.outline,
+                    CircleShape
+                ),
+            contentScale = ContentScale.Crop,
+            placeholder = rememberVectorPainter(Icons.Default.Person),
+            error = rememberVectorPainter(Icons.Default.Person)
         )
 
         Column(modifier = Modifier.weight(3f)) {
             Text(
-                text = "Android Development", style = TextStyle.Default.copy(
+                text = course.courseName, style = TextStyle.Default.copy(
                     color = Color.Black,
                     fontWeight = FontWeight.ExtraBold
                 )
@@ -229,7 +256,7 @@ fun CourseDetails(course: Course) {
                         )
                     )
                     Text(
-                        text = "Amit Shekhar", style = TextStyle.Default.copy(
+                        text = course.instructorName, style = TextStyle.Default.copy(
                             color = Color.Gray,
                             fontWeight = FontWeight.Light
                         )
@@ -238,14 +265,14 @@ fun CourseDetails(course: Course) {
 
                 Column(modifier = Modifier.weight(1F)) {
                     Text(
-                        text = "Instructor", style = TextStyle.Default.copy(
+                        text = "Duration", style = TextStyle.Default.copy(
                             color = Color.Gray,
                             fontWeight = FontWeight.Light,
                             fontSize = 10.sp
                         )
                     )
                     Text(
-                        text = "Amit Shekhar", style = TextStyle.Default.copy(
+                        text = course.durationInMonths.toString(), style = TextStyle.Default.copy(
                             color = Color.Gray,
                             fontWeight = FontWeight.Light
                         )
@@ -254,14 +281,14 @@ fun CourseDetails(course: Course) {
 
                 Column(modifier = Modifier.weight(1F)) {
                     Text(
-                        text = "Instructor", style = TextStyle.Default.copy(
+                        text = "Fees", style = TextStyle.Default.copy(
                             color = Color.Gray,
                             fontWeight = FontWeight.Light,
                             fontSize = 10.sp
                         )
                     )
                     Text(
-                        text = "Amit Shekhar", style = TextStyle.Default.copy(
+                        text = course.fees.toString(), style = TextStyle.Default.copy(
                             color = Color.Gray,
                             fontWeight = FontWeight.Light
                         )
@@ -477,8 +504,10 @@ fun CourseEnrollmentItem(
                 OutlinedButton(
                     onClick = onUnenrollClick
                 ) {
-                    Text(text = "Unenroll",
-                        style = MaterialTheme.typography.bodyMedium,)
+                    Text(
+                        text = "Unenroll",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
                 }
             } else {
                 Button(

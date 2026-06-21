@@ -1,5 +1,8 @@
 package com.vibhorpatil.schoolmanagement.presentation.course
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,10 +22,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.vibhorpatil.schoolmanagement.R
 import com.vibhorpatil.schoolmanagement.presentation.components.AppTopBar
+import com.vibhorpatil.schoolmanagement.presentation.components.CircularImage
+import com.vibhorpatil.schoolmanagement.utils.Util
 
 
 @Composable
@@ -34,6 +40,16 @@ fun CourseEntryFormScreen(
 
     LaunchedEffect(courseId) {
         viewModel.loadCourse(courseId)
+    }
+
+    val context = LocalContext.current
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val savePath = Util.copyImageToAppStorage(context, uri)
+            viewModel.courseProfilePhoto = savePath
+        }
     }
 
     Scaffold(
@@ -62,6 +78,8 @@ fun CourseEntryFormScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+
+                CircularImage(viewModel.courseProfilePhoto) { imagePickerLauncher.launch("image/*") }
 
                 OutlinedTextField(
                     value = viewModel.courseName,

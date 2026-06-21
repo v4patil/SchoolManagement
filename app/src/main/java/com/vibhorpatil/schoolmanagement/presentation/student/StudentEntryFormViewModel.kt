@@ -22,6 +22,7 @@ class StudentEntryFormViewModel @Inject constructor(
     var studentId by mutableStateOf<Long?>(null)
         private set
 
+    var studentImage : String?  by mutableStateOf("")
     var studentCode by mutableStateOf("")
     var fullName by mutableStateOf("")
     var email by mutableStateOf("")
@@ -34,6 +35,7 @@ class StudentEntryFormViewModel @Inject constructor(
 
     fun resetForm() {
         studentId = null
+        studentImage = ""
         studentCode = ""
         fullName = ""
         email = ""
@@ -54,6 +56,7 @@ class StudentEntryFormViewModel @Inject constructor(
         isLoading = true
         viewModelScope.launch(dispatcherProvider.IO) {
             studentRepository.getStudent(id).firstOrNull()?.let { student ->
+                studentImage = student.profilePhoto
                 studentCode = student.studentCode
                 fullName = student.fullName
                 email = student.email
@@ -69,6 +72,7 @@ class StudentEntryFormViewModel @Inject constructor(
         viewModelScope.launch(dispatcherProvider.IO) {
             val student = StudentEntity(
                 studentId = studentId ?: 0,
+                profilePhoto = studentImage,
                 studentCode = studentCode,
                 fullName = fullName,
                 email = email,

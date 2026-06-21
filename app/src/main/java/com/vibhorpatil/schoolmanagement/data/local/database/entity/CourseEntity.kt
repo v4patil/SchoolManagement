@@ -18,6 +18,9 @@ data class CourseEntity(
     @ColumnInfo(name = Constants.CourseConstants.COLUMN_COURSE_NAME)
     val courseName: String,
 
+    @ColumnInfo(name = Constants.CourseConstants.COLUMN_COURSE_PROFILE_PHOTO)
+    val courseProfilePhoto: String? = null,
+
     @ColumnInfo(name = Constants.CourseConstants.COLUMN_DESCRIPTION)
     val description: String,
 

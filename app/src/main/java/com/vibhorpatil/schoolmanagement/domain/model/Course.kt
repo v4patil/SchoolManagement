@@ -10,6 +10,8 @@ data class Course(
 
     val description: String,
 
+    val profilePhoto: String?,
+
     val durationInMonths: Int,
 
     val fees: Double,
