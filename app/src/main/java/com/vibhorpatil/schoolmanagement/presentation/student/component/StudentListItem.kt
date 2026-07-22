@@ -19,12 +19,16 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -36,6 +40,7 @@ import androidx.compose.ui.unit.sp
 import com.vibhorpatil.schoolmanagement.domain.model.Student
 import com.vibhorpatil.schoolmanagement.utils.PreviewData.dummyStudent
 import coil.compose.AsyncImage
+import com.vibhorpatil.schoolmanagement.presentation.components.PopMenuView
 import java.io.File
 
 @Preview(showBackground = true)
@@ -43,13 +48,19 @@ import java.io.File
 fun StudentListItemPreview() {
     MaterialTheme {
         Box(modifier = Modifier.padding(4.dp)) {
-            StudentListItem(dummyStudent) {}
+            StudentListItem(dummyStudent, {}, {_, _ ->}, false)
         }
     }
 }
 
 @Composable
-fun StudentListItem(student: Student, onItemClick: (Long) -> Unit) {
+fun StudentListItem(
+    student: Student,
+    onItemClick: (Long) -> Unit,
+    onPopMenuItemClick: (Int, Long) -> Unit,
+    isSelectionMode: Boolean
+) {
+    var isExpanded by remember {mutableStateOf(false)}
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -146,11 +157,24 @@ fun StudentListItem(student: Student, onItemClick: (Long) -> Unit) {
                 )
             }
 
-            IconButton(onClick = {  }) {
+            Box {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "Options",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    modifier = Modifier
+                        .clickable(onClick = {
+                            isExpanded = true
+                        })
+                        .alpha(if (!isSelectionMode) 1f else 0f),
+                    contentDescription = ""
+                )
+
+                PopMenuView(
+                    isExpanded,
+                    { isExpanded = false },
+                    { action ->
+                        isExpanded = false
+                        onPopMenuItemClick(action, student.studentId)
+                    }
                 )
             }
         }

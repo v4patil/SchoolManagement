@@ -22,6 +22,10 @@ class StudentRepositoryImpl @Inject constructor(
         studentDao.deleteStudent(student)
     }
 
+    override suspend fun deleteStudentById(studentId: Long) {
+        studentDao.deleteStudentById(studentId)
+    }
+
     override suspend fun getStudents(): Flow<List<StudentEntity>> {
         return studentDao.getAllStudents()
     }

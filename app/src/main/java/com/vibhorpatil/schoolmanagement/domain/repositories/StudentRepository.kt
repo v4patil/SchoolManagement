@@ -11,6 +11,8 @@ interface StudentRepository {
 
     suspend fun deleteStudent(student: StudentEntity)
 
+    suspend fun deleteStudentById(studentId: Long)
+
     suspend fun getStudents(): Flow<List<StudentEntity>>
 
     suspend fun getStudent(studentId: Long): Flow<StudentEntity?>

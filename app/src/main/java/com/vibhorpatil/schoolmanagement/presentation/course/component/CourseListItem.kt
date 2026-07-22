@@ -20,8 +20,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import coil.compose.AsyncImage
 import androidx.compose.ui.graphics.Color
@@ -32,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vibhorpatil.schoolmanagement.domain.model.Course
+import com.vibhorpatil.schoolmanagement.presentation.components.PopMenuView
 import com.vibhorpatil.schoolmanagement.utils.PreviewData.dummyCourse
 import java.io.File
 
@@ -39,12 +45,17 @@ import java.io.File
 @Preview(showBackground = true)
 @Composable
 fun CourseListItemPreview() {
-    CourseListItem(dummyCourse){}
+    CourseListItem(dummyCourse, {}, { _, _ ->}, false)
 }
 
 @Composable
-fun CourseListItem(course: Course, onItemClick : (Long) -> Unit) {
+fun CourseListItem(
+    course: Course, onItemClick: (Long) -> Unit,
+    onPopMenuItemClick: (Int, Long) -> Unit,
+    isSelectionMode: Boolean
+) {
 
+    var isExpanded by remember {mutableStateOf(false)}
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -123,11 +134,26 @@ fun CourseListItem(course: Course, onItemClick : (Long) -> Unit) {
                 )
             }
 
-            Icon(
-                imageVector = Icons.Default.MoreVert,
-                modifier = Modifier.clickable(onClick = {}),
-                contentDescription = ""
-            )
+            Box {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    modifier = Modifier
+                        .clickable(onClick = {
+                            isExpanded = true
+                        })
+                        .alpha(if (!isSelectionMode) 1f else 0f),
+                    contentDescription = ""
+                )
+
+                PopMenuView(
+                    isExpanded,
+                    { isExpanded = false },
+                    { action ->
+                        isExpanded = false
+                        onPopMenuItemClick(action, course.courseId)
+                    }
+                )
+            }
         }
     }
 

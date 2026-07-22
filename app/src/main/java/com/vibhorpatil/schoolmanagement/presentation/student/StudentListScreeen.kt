@@ -15,11 +15,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.vibhorpatil.schoolmanagement.R
 import com.vibhorpatil.schoolmanagement.presentation.components.AppTopBar
+import com.vibhorpatil.schoolmanagement.presentation.components.ConfirmationDialog
 import com.vibhorpatil.schoolmanagement.presentation.components.EmptyView
 import com.vibhorpatil.schoolmanagement.presentation.navigation.Screen
 import com.vibhorpatil.schoolmanagement.presentation.student.component.StudentListItem
@@ -35,6 +39,7 @@ fun StudentListScreen(
     val currentRoute = navController.currentBackStackEntry?.destination?.route
     val isSelectionMode = currentRoute?.startsWith("select_student") == true || 
                          currentRoute?.contains("select_student") == true
+    var isShowDeleteConfirmationDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -76,7 +81,19 @@ fun StudentListScreen(
                                         } else {
                                             navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title + "/$id")
                                         }
-                                    }
+                                    }, onPopMenuItemClick = {menuItemId, studentId ->
+                                        when (menuItemId) {
+                                            1 -> {
+                                                navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title + "/$studentId")
+                                            }
+
+                                            2 -> {
+                                                isShowDeleteConfirmationDialog = true
+                                                viewModel.studentId = studentId
+                                            }
+                                        }
+                                    },
+                                    isSelectionMode = isSelectionMode
                                 )
                             }
                         }
@@ -91,6 +108,19 @@ fun StudentListScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
+            }
+
+            if (isShowDeleteConfirmationDialog) {
+                ConfirmationDialog(
+                    "Delete", "Are you Sure?",
+                    {
+                        isShowDeleteConfirmationDialog = false
+                        viewModel.deleteStudent()
+                    },
+                    {
+                        isShowDeleteConfirmationDialog = false
+                    }
+                )
             }
         }
     }

@@ -25,6 +25,8 @@ class StudentListViewModel @Inject constructor(
     private val _studentListState = MutableStateFlow<UiState<List<Student>>>(UiState.Loading)
     val studentListState: StateFlow<UiState<List<Student>>> = _studentListState
 
+    var studentId = -1L
+
     init {
         getStudents()
     }
@@ -43,6 +45,15 @@ class StudentListViewModel @Inject constructor(
                 .collect { students ->
                     _studentListState.value = UiState.Success(students)
                 }
+        }
+    }
+
+    fun deleteStudent() {
+        viewModelScope.launch(dispatcherProvider.IO) {
+            if (studentId != -1L) {
+                studentRepository.deleteStudentById(studentId)
+                studentId = -1
+            }
         }
     }
 }

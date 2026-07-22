@@ -25,6 +25,8 @@ class CourseListViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UiState<List<Course>>>(UiState.Loading)
     val uiState: StateFlow<UiState<List<Course>>> = _uiState
 
+    var deleteCourseId = -1L
+
     init {
         getCourses()
     }
@@ -42,6 +44,15 @@ class CourseListViewModel @Inject constructor(
                 .collect { courses ->
                     _uiState.value = UiState.Success(courses)
                 }
+        }
+    }
+
+    fun deleteCourse() {
+        viewModelScope.launch(dispatcherProvider.Default) {
+            if (deleteCourseId != -1L) {
+                courseRepository.deleteCourseById(deleteCourseId)
+                deleteCourseId = -1
+            }
         }
     }
 

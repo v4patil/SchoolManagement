@@ -16,11 +16,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.vibhorpatil.schoolmanagement.R
 import com.vibhorpatil.schoolmanagement.presentation.components.AppTopBar
+import com.vibhorpatil.schoolmanagement.presentation.components.ConfirmationDialog
 import com.vibhorpatil.schoolmanagement.presentation.components.EmptyView
 import com.vibhorpatil.schoolmanagement.presentation.course.component.CourseListItem
 import com.vibhorpatil.schoolmanagement.presentation.navigation.Screen
@@ -36,6 +40,7 @@ fun CourseListScreen(
     val currentRoute = navController.currentBackStackEntry?.destination?.route
     val isSelectionMode = currentRoute?.startsWith("select_course") == true ||
             currentRoute?.contains("select_course") == true
+    var isShowDeleteConfirmationDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -73,13 +78,29 @@ fun CourseListScreen(
                     if (state.data.isNotEmpty()) {
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(state.data) { course ->
-                                CourseListItem(course) { courseId ->
+                                CourseListItem(
+                                    course  = course,
+                                    onItemClick =  { courseId ->
                                     if (isSelectionMode) {
                                         navController.navigate("select_student_for_course/$courseId")
                                     } else {
                                         navController.navigate(Screen.EntryFormScreen.CourseEntryForm.title + "/$courseId")
                                     }
-                                }
+                                },
+                                    onPopMenuItemClick  = { menuItemId, courseId ->
+                                        when (menuItemId) {
+                                            1 -> {
+                                                navController.navigate(Screen.EntryFormScreen.CourseEntryForm.title + "/$courseId")
+                                            }
+
+                                            2 -> {
+                                                isShowDeleteConfirmationDialog = true
+
+                                                viewModel.deleteCourseId = courseId
+                                            }
+                                        }
+                                    }, isSelectionMode = isSelectionMode
+                                )
                             }
                         }
                     } else {
@@ -94,6 +115,12 @@ fun CourseListScreen(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
+            }
+            if (isShowDeleteConfirmationDialog) {
+                ConfirmationDialog("Delete", "Are you Sure", {
+                    isShowDeleteConfirmationDialog = false
+                    viewModel.deleteCourse()
+                }, { isShowDeleteConfirmationDialog = false })
             }
         }
     }
