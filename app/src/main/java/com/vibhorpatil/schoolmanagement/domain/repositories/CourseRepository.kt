@@ -17,4 +17,6 @@ interface CourseRepository {
 
     suspend fun deleteCourseById(courseId: Long)
 
+    fun observeCourseCount(): Flow<Int>
+
 }

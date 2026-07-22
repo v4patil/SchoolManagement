@@ -48,5 +48,13 @@ interface CourseDao {
     )
     suspend fun deleteCourseById(courseId: Long)
 
+    @Query(
+        """
+    SELECT COUNT(*)
+    FROM ${Constants.CourseConstants.TABLE_NAME}
+    """
+    )
+    fun observeCourseCount(): Flow<Int>
+
 
 }

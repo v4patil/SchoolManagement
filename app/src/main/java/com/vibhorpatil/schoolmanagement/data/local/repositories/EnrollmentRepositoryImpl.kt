@@ -44,4 +44,8 @@ class EnrollmentRepositoryImpl @Inject constructor(private val enrollmentDao: En
     override suspend fun deleteEnrollment(studentId: Long, courseId: Long) {
         return enrollmentDao.deleteEnrollment(studentId, courseId)
     }
+
+    override fun observeEnrollmentCount(): Flow<Int> {
+        return enrollmentDao.observeEnrollmentCount()
+    }
 }

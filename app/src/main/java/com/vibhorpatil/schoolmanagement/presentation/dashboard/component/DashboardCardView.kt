@@ -86,7 +86,8 @@ fun DashboardCardView(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.labelSmall,
-                    color = textSecondarySlate
+                    color = textSecondarySlate,
+                    maxLines = 1
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))

@@ -69,4 +69,12 @@ interface EnrollmentDao {
     AND ${Constants.EnrollmentConstants.COLUMN_COURSE_ID} = :courseId
     """)
     suspend fun deleteEnrollment(studentId: Long, courseId: Long)
+
+    @Query(
+        """
+    SELECT COUNT(*)
+    FROM ${Constants.EnrollmentConstants.TABLE_NAME}
+    """
+    )
+    fun observeEnrollmentCount(): Flow<Int>
 }

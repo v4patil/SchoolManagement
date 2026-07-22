@@ -22,4 +22,6 @@ interface EnrollmentRepository {
     suspend fun getStudentsForCourse(courseId: Long): List<EnrollmentEntity>
 
     suspend fun deleteEnrollment(studentId: Long, courseId: Long)
+
+    fun observeEnrollmentCount(): Flow<Int>
 }

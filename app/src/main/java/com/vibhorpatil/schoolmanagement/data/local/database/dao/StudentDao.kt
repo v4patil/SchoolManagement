@@ -65,4 +65,12 @@ interface StudentDao {
         """
     )
     suspend fun getStudentCount(): Int
+
+    @Query(
+        """
+    SELECT COUNT(*)
+    FROM ${Constants.StudentConstants.TABLE_NAME}
+    """
+    )
+    fun observeStudentCount(): Flow<Int>
 }

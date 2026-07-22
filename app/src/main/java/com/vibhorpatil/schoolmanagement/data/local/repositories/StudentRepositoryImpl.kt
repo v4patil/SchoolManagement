@@ -33,4 +33,8 @@ class StudentRepositoryImpl @Inject constructor(
     override suspend fun getStudent(studentId: Long): Flow<StudentEntity?> {
         return studentDao.getStudentById(studentId)
     }
+
+    override fun observeStudentCount(): Flow<Int> {
+        return studentDao.observeStudentCount()
+    }
 }

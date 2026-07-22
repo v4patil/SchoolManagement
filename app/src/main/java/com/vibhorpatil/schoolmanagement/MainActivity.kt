@@ -27,6 +27,7 @@ import com.vibhorpatil.schoolmanagement.presentation.course.CourseEntryFormViewM
 import com.vibhorpatil.schoolmanagement.presentation.course.CourseListScreen
 import com.vibhorpatil.schoolmanagement.presentation.course.CourseListViewModel
 import com.vibhorpatil.schoolmanagement.presentation.dashboard.DashBoardScreen
+import com.vibhorpatil.schoolmanagement.presentation.dashboard.DashboardViewModel
 import com.vibhorpatil.schoolmanagement.presentation.dashboard.component.drawer.DashboardDrawerSheet
 import com.vibhorpatil.schoolmanagement.presentation.enrollment.EnrollIntoScreen
 import com.vibhorpatil.schoolmanagement.presentation.enrollment.EnrollmentScreen
@@ -57,6 +58,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var enrollmentViewModel: EnrollmentViewModel
 
+    @Inject
+    lateinit var dashboardViewModel: DashboardViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -73,7 +77,8 @@ class MainActivity : ComponentActivity() {
                     studentEntryFormViewModel,
                     courseListViewModel,
                     courseEntryFormViewModel,
-                    enrollmentViewModel
+                    enrollmentViewModel,
+                    dashboardViewModel
                 )
             }
         }
@@ -88,7 +93,8 @@ fun NavigationDrawerView(
     studentEntryFormViewModel: StudentEntryFormViewModel,
     courseListViewModel: CourseListViewModel,
     courseEntryFormViewModel: CourseEntryFormViewModel,
-    enrollmentViewModel: EnrollmentViewModel
+    enrollmentViewModel: EnrollmentViewModel,
+    dashboardViewModel: DashboardViewModel
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -113,7 +119,7 @@ fun NavigationDrawerView(
                     startDestination = SchoolScreenNavigation.DashboardScreenNavigation.DashboardScreen.route
                 ) {
                     composable(SchoolScreenNavigation.DashboardScreenNavigation.DashboardScreen.route) {
-                        DashBoardScreen()
+                        DashBoardScreen(dashboardViewModel)
                     }
                     composable(Screen.DrawerScreen.StudentList.title) {
                         StudentListScreen(studentListViewModel, navController)

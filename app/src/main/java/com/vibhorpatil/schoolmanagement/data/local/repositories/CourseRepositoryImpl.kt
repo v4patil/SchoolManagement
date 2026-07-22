@@ -33,4 +33,8 @@ class CourseRepositoryImpl @Inject constructor(
     override suspend fun getCourseById(courseId: Long): CourseEntity? {
         return courseDao.getCourseById(courseId)
     }
+
+    override fun observeCourseCount(): Flow<Int> {
+        return courseDao.observeCourseCount()
+    }
 }
