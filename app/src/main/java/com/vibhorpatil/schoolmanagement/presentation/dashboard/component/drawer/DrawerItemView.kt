@@ -34,7 +34,7 @@ fun DrawerItemView(
     item: Screen.DrawerScreen,
     onItemClick: () -> Unit
 ) {
-    val background = if (selected) Color.LightGray else Color.White
+    val background = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
     Row(
         modifier = Modifier
             .background(background)

@@ -28,7 +28,7 @@ import com.vibhorpatil.schoolmanagement.R
 import com.vibhorpatil.schoolmanagement.presentation.theme.primaryBlue
 import com.vibhorpatil.schoolmanagement.presentation.theme.textSecondarySlate
 
-@Preview(showSystemUi = true, showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun DashboardCardViewPreview() {
     DashboardCardView(R.drawable.icon_students, "Title", "16Lpa")

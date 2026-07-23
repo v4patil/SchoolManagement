@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.vibhorpatil.schoolmanagement.R
@@ -102,7 +104,8 @@ fun CourseEntryFormScreen(
                     onValueChange = { viewModel.courseDuration = it.toIntOrNull() ?: 0 },
                     label = { Text("Course Duration") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions= KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
                 OutlinedTextField(
@@ -110,7 +113,8 @@ fun CourseEntryFormScreen(
                     onValueChange = { viewModel.courseFees = it.toDoubleOrNull() ?: 0.0 },
                     label = { Text("Course Fees") },
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions= KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
 
                 OutlinedTextField(

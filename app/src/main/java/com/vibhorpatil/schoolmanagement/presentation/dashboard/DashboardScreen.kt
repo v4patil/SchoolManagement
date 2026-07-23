@@ -2,6 +2,7 @@ package com.vibhorpatil.schoolmanagement.presentation.dashboard
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -10,20 +11,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.vibhorpatil.schoolmanagement.R
 import com.vibhorpatil.schoolmanagement.presentation.components.AppTopBar
 import com.vibhorpatil.schoolmanagement.presentation.dashboard.component.DashboardCardView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashBoardScreen(dashboardViewModel: DashboardViewModel) {
+fun DashBoardScreen(dashboardViewModel: DashboardViewModel, onClickNavigation: (String) -> Unit) {
     val uiState by dashboardViewModel.uiState.collectAsStateWithLifecycle()
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         AppTopBar(title = "Hello Vibhor")
         DashboardContent(uiState = uiState)
+        QuickActionsSection(
+            { onClickNavigation("Student") },
+            { onClickNavigation("Course") },
+            { onClickNavigation("Enroll") })
     }
 }
 
@@ -56,7 +60,7 @@ private fun DashboardContent(
     )
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.wrapContentHeight()
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(2)

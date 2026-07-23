@@ -33,7 +33,7 @@ fun AppTopBar(
 
     TopAppBar(
         title = {
-            Text(text = title, style = MaterialTheme.typography.titleLarge, color = Color.Black)
+            Text(text = title, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
         },
         navigationIcon = {
             navigationIcon?.let {
@@ -43,7 +43,7 @@ fun AppTopBar(
                     Icon(
                         painter = painterResource(navigationIcon),
                         contentDescription = "Navigation",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
             }
@@ -56,17 +56,17 @@ fun AppTopBar(
                     Icon(
                         painter = painterResource(actionIcon),
                         contentDescription = "Action",
-                        tint = Color.Black
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 }
 
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = surfaceWhite,
-            titleContentColor = surfaceWhite,
-            navigationIconContentColor = surfaceWhite,
-            actionIconContentColor = surfaceWhite
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.primary,
+            navigationIconContentColor = MaterialTheme.colorScheme.primary,
+            actionIconContentColor = MaterialTheme.colorScheme.primary
         )
     )
 

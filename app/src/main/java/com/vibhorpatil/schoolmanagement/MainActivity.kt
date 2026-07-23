@@ -38,7 +38,7 @@ import com.vibhorpatil.schoolmanagement.presentation.student.StudentEntryFormScr
 import com.vibhorpatil.schoolmanagement.presentation.student.StudentEntryFormViewModel
 import com.vibhorpatil.schoolmanagement.presentation.student.StudentListScreen
 import com.vibhorpatil.schoolmanagement.presentation.student.StudentListViewModel
-import com.vibhorpatil.schoolmanagement.ui.theme.SchoolManagementTheme
+import com.vibhorpatil.schoolmanagement.utils.MyAppTheme
 import javax.inject.Inject
 
 class MainActivity : ComponentActivity() {
@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            SchoolManagementTheme {
+            MyAppTheme {
                 NavigationDrawerView(
                     studentListViewModel,
                     studentEntryFormViewModel,
@@ -119,7 +119,20 @@ fun NavigationDrawerView(
                     startDestination = SchoolScreenNavigation.DashboardScreenNavigation.DashboardScreen.route
                 ) {
                     composable(SchoolScreenNavigation.DashboardScreenNavigation.DashboardScreen.route) {
-                        DashBoardScreen(dashboardViewModel)
+                        DashBoardScreen(dashboardViewModel){
+                            screen ->
+                            when (screen) {
+                                "Student" -> {
+                                    navController.navigate(Screen.EntryFormScreen.StudentEntryForm.title + "/-1")
+                                }
+                                "Course" -> {
+                                    navController.navigate(Screen.EntryFormScreen.CourseEntryForm.title + "/-1")
+                                }
+                                else -> {
+                                    navController.navigate(Screen.DrawerScreen.EnrollmentList.title)
+                                }
+                            }
+                        }
                     }
                     composable(Screen.DrawerScreen.StudentList.title) {
                         StudentListScreen(studentListViewModel, navController)
